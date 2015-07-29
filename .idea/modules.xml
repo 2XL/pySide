@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/BB/BB.iml" filepath="$PROJECT_DIR$/BB/BB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chapt1/chapt1.iml" filepath="$PROJECT_DIR$/chapt1/chapt1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chapt2/chapt2.iml" filepath="$PROJECT_DIR$/chapt2/chapt2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pySide.iml" filepath="$PROJECT_DIR$/pySide.iml" />
+    </modules>
+  </component>
+</project>
