@@ -5,8 +5,6 @@ __author__ = 'anna'
 import sys
 from PySide.QtCore import Qt
 from PySide.QtGui import QApplication, QLabel
-
-
 # Main Function
 if __name__ == '__main__':
     # Create the main application
