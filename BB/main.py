@@ -1,29 +1,47 @@
 __author__ = 'anna'
 
-
+# Hints
+# absolute positioning layout starts at top-left (0,0)
 
 # Import the necessary modules required
 import sys
 import time
 from PySide.QtCore import Qt,  QDateTime, QTimer, SIGNAL
 from PySide.QtGui import QApplication, QLabel, QWidget, QIcon, QToolTip, QPushButton, QMessageBox, QDesktopWidget, \
-    QLCDNumber, QMainWindow, QStatusBar, QProgressBar, QTextEdit, QAction, QKeySequence
+    QLCDNumber, QMainWindow, QStatusBar, QProgressBar, QTextEdit, QAction, QKeySequence, QHBoxLayout
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QWidget):
     """ Our Main Window Class
     """
     def __init__(self):
         """ Constructor Fucntion
         """
-        QMainWindow.__init__(self)
+        QWidget.__init__(self)
         self.setWindowTitle("BenchBox GUI v0.0.1")
         self.setWindowIcon(QIcon('icon/face.png'))
         self.setGeometry(300, 250, 400, 300)
-        self.statusLabel = QLabel('Showing Progress')
-        self.progressBar = QProgressBar()
-        self.progressBar.setMinimum(0)
-        self.progressBar.setMaximum(100)
+        #self.statusLabel = QLabel('Showing Progress')
+        #self.progressBar = QProgressBar()
+        #self.progressBar.setMinimum(0)
+        #self.progressBar.setMaximum(100)
+
+
+
+    def SetLayout(self):
+        """ Function to add buttons and set the layout
+        """
+        horizontalLayout = QHBoxLayout(self)
+        hButton1 = QPushButton('Button 1', self)
+        hButton2 = QPushButton('Button 2', self)
+        hButton3 = QPushButton('Button 3', self)
+        hButton4 = QPushButton('Button 4', self)
+        horizontalLayout.addWidget(hButton1)
+        horizontalLayout.addWidget(hButton2)
+        horizontalLayout.addWidget(hButton3)
+        horizontalLayout.addWidget(hButton4)
+        self.setLayout(horizontalLayout)
+
 
 
     def CreateStatusBar(self):
@@ -52,7 +70,7 @@ class MainWindow(QMainWindow):
         self.textEdit = QTextEdit()
         self.setCentralWidget(self.textEdit)
         self.CreateActions()
-        self.CreateMenus()
+        self.CreateMenus() #---------------------
         self.fileMenu.addAction(self.newAction)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(self.exitAction)
@@ -60,6 +78,11 @@ class MainWindow(QMainWindow):
         self.fileMenu.addSeparator()
         self.editMenu.addAction(self.pasteAction)
         self.helpMenu.addAction(self.aboutAction)
+        self.CreateToolBar() #-------------------
+        self.mainToolBar.addAction(self.newAction)
+        self.mainToolBar.addSeparator()
+        self.mainToolBar.addAction(self.copyAction)
+        self.mainToolBar.addAction(self.pasteAction)
 
     def newFile(self):
         self.textEdit.setText('')
@@ -98,6 +121,12 @@ class MainWindow(QMainWindow):
         self.fileMenu = self.menuBar().addMenu("&File")
         self.editMenu = self.menuBar().addMenu("&Edit")
         self.helpMenu = self.menuBar().addMenu("&Help")
+
+
+    def CreateToolBar(self):
+        """ Function to create tool bar
+        """
+        self.mainToolBar = self.addToolBar('Main')
 
 
 class SampleWindow(QWidget):
@@ -215,10 +244,11 @@ if __name__ == '__main__':
         sys.exit(0)
         """
         mainWindow = MainWindow()
-        mainWindow.CreateStatusBar()
-        mainWindow.SetupComponents()
+        mainWindow.SetLayout()
+        #mainWindow.CreateStatusBar()
+        #mainWindow.SetupComponents()
         mainWindow.show()
-        mainWindow.ShowProgress()
+        #mainWindow.ShowProgress()
         myApp.exec_()
         sys.exit(0)
 
