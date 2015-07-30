@@ -7,9 +7,9 @@ __author__ = 'anna'
 import sys
 import time
 from PySide.QtCore import Qt,  QDateTime, QTimer, SIGNAL
-from PySide.QtGui import QApplication, QLabel, QWidget, QIcon, QToolTip, QPushButton, QMessageBox, QDesktopWidget, \
-    QLCDNumber, QMainWindow, QStatusBar, QProgressBar, QTextEdit, QAction, QKeySequence, QHBoxLayout
-
+#from PySide.QtGui import QApplication, QLabel, QWidget, QIcon, QToolTip, QPushButton, QMessageBox, QDesktopWidget, \
+#    QLCDNumber, QMainWindow, QStatusBar, QProgressBar, QTextEdit, QAction, QKeySequence, QHBoxLayout
+from PySide.QtGui import *
 
 class MainWindow(QWidget):
     """ Our Main Window Class
@@ -28,7 +28,7 @@ class MainWindow(QWidget):
 
 
 
-    def SetLayout(self):
+    def SetHLayout(self):
         """ Function to add buttons and set the layout
         """
         horizontalLayout = QHBoxLayout(self)
@@ -43,15 +43,55 @@ class MainWindow(QWidget):
         self.setLayout(horizontalLayout)
 
 
+    def SetVLayout(self):
+        verticalLayout = QVBoxLayout(self)
+        vButton1 = QPushButton('Button 1', self)
+        vButton2 = QPushButton('Button 2', self)
+        vButton3 = QPushButton('Button 3', self)
+        vButton4 = QPushButton('Button 4', self)
+        verticalLayout.addWidget(vButton1)
+        verticalLayout.addWidget(vButton2)
+        verticalLayout.addStretch()
+        verticalLayout.addWidget(vButton3)
+        verticalLayout.addWidget(vButton4)
+        self.setLayout(verticalLayout)
+
+    def SetGLayout(self):
+        gridLayout = QGridLayout(self)
+        gButton1 = QPushButton('Button 1 (0,0)', self)
+        gButton2 = QPushButton('Button 2 (0,1)', self)
+        gButton3 = QPushButton('Button 3 (1,0, 1,2)', self)
+        gButton4 = QPushButton('Button 4 (2,0)', self)
+        gButton5 = QPushButton('Button 5 (2,1)', self)
+        gridLayout.addWidget(gButton1, 0, 0)
+        gridLayout.addWidget(gButton2, 0, 1)
+        gridLayout.addWidget(gButton3, 1, 0, 1, 2)
+        gridLayout.addWidget(gButton4, 2, 0)
+        gridLayout.addWidget(gButton5, 2, 1)
+        self.setLayout(gridLayout)
+
+    def SetFLayout(self):
+        formLayout = QFormLayout(self)
+        labelUsername = QLabel("Username")
+        txtUsername = QLineEdit()
+        labelPassword = QLabel("Password")
+        txtPassword = QLineEdit()
+        formLayout.addRow(labelUsername, txtUsername)
+        formLayout.addRow(labelPassword, txtPassword)
+        self.setLayout(formLayout)
+
+
+
+
 
     def CreateStatusBar(self):
-        """ Function to create Status Bar
-        """
-        self.myStatusBar = QStatusBar()
-        self.progressBar.setValue(10)
-        self.myStatusBar.addWidget(self.statusLabel, 1)
-        self.myStatusBar.addWidget(self.progressBar, 2)
-        self.setStatusBar(self.myStatusBar)
+            """ Function to create Status Bar
+            """
+            self.myStatusBar = QStatusBar()
+            self.progressBar.setValue(10)
+            self.myStatusBar.addWidget(self.statusLabel, 1)
+            self.myStatusBar.addWidget(self.progressBar, 2)
+            self.setStatusBar(self.myStatusBar)
 
     def ShowProgress(self):
         """ Function to show progress
@@ -244,7 +284,7 @@ if __name__ == '__main__':
         sys.exit(0)
         """
         mainWindow = MainWindow()
-        mainWindow.SetLayout()
+        mainWindow.SetFLayout()
         #mainWindow.CreateStatusBar()
         #mainWindow.SetupComponents()
         mainWindow.show()
