@@ -2,13 +2,18 @@ __author__ = 'anna'
 
 # Hints
 # absolute positioning layout starts at top-left (0,0)
+# implementar una interficie similar al putty
+# arquitectura de proxy master node (with nodejs monitor) + dummy slave clients + stacksync server + owncloud server
+# + mongodb : mongolab => get reports from the dummy slaves when this results executing simulations.
+
 
 # Import the necessary modules required
 import sys
 import time
-from PySide.QtCore import Qt,  QDateTime, QTimer, SIGNAL
+#from PySide.QtCore import Qt,  QDateTime, QTimer, SIGNAL
 #from PySide.QtGui import QApplication, QLabel, QWidget, QIcon, QToolTip, QPushButton, QMessageBox, QDesktopWidget, \
 #    QLCDNumber, QMainWindow, QStatusBar, QProgressBar, QTextEdit, QAction, QKeySequence, QHBoxLayout
+from PySide.QtCore import *
 from PySide.QtGui import *
 
 class MainWindow(QWidget):
@@ -25,6 +30,27 @@ class MainWindow(QWidget):
         #self.progressBar = QProgressBar()
         #self.progressBar.setMinimum(0)
         #self.progressBar.setMaximum(100)
+
+        self.myLayout = QVBoxLayout()
+        self.myLabel = QLabel("Press 'Esc' to close this App")
+        self.infoLabel = QLabel()
+        self.myLabel.setAlignment(Qt.AlignCenter)
+        self.infoLabel.setAlignment(Qt.AlignCenter)
+        self.myLayout.addWidget(self.myLabel)
+        self.myLayout.addWidget(self.infoLabel)
+        self.setLayout(self.myLayout)
+
+
+    # Function reimplementing Key Press, Mouse Click and Resize Events
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape: self.close()
+
+    def mouseDoubleClickEvent(self, event):
+        self.close()
+
+    def resizeEvent(self, event):
+        self.infoLabel.setText("Window Resized to QSize(%d, %d)" % (event.size().width(), event.size().height()))
+
 
 
 
@@ -76,13 +102,18 @@ class MainWindow(QWidget):
         txtUsername = QLineEdit()
         labelPassword = QLabel("Password")
         txtPassword = QLineEdit()
+        labelStackSync = QLabel("StackSync")
+        txtStackSync = QLineEdit()
+        labelOwnCoud = QLabel("OwnCloud")
+        txtOwnCloud = QLineEdit()
+        btnNext = QPushButton('Button Next (2,0)', self)
+        btnBack = QPushButton('Button Back (2,1)', self)
         formLayout.addRow(labelUsername, txtUsername)
         formLayout.addRow(labelPassword, txtPassword)
+        formLayout.addRow(labelStackSync, txtStackSync)
+        formLayout.addRow(labelOwnCoud, txtOwnCloud)
+        formLayout.addRow(btnBack, btnNext)
         self.setLayout(formLayout)
-
-
-
-
 
     def CreateStatusBar(self):
             """ Function to create Status Bar
@@ -126,12 +157,15 @@ class MainWindow(QWidget):
 
     def newFile(self):
         self.textEdit.setText('')
+
     def exitFile(self):
         self.close()
+
     def aboutHelp(self):
         QMessageBox.about(self, "About Simple Text Editor",
                           "This example demonstrates the use "
                           "of Menu Bar")
+
     def CreateActions(self):
         """ Function to create actions for menus
         """
@@ -155,6 +189,7 @@ class MainWindow(QWidget):
                             self, statusTip="Displays info about text editor",
                             triggered=self.aboutHelp)
         # Actual menu bar item creation
+
     def CreateMenus(self):
         """ Function to create actual menu bar
         """
@@ -261,6 +296,117 @@ class MyTimer(QWidget):
         currentTime = QDateTime.currentDateTime().toString('hh:mm:ss')
         self.myTimeDisplay.display(currentTime)
 
+class MyWidget(QWidget):
+    # Constructor function
+    def __init__(self):
+        QWidget.__init__(self)
+        self.setWindowTitle("Reimplementing Events")
+        self.setGeometry(300, 250, 300, 100)
+        self.myLayout = QVBoxLayout()
+        self.myLabel1 = QLabel("Text 1")
+        self.myLineEdit1 = QLineEdit()
+        self.myLabel2 = QLabel("Text 2")
+        self.myLineEdit2 = QLineEdit()
+        self.myLabel3 = QLabel("Text 3")
+        self.myLineEdit3 = QLineEdit()
+        self.myLayout.addWidget(self.myLabel1)
+        self.myLayout.addWidget(self.myLineEdit1)
+        self.myLayout.addWidget(self.myLabel2)
+        self.myLayout.addWidget(self.myLineEdit2)
+        self.myLayout.addWidget(self.myLabel3)
+        self.myLayout.addWidget(self.myLineEdit3)
+        self.setLayout(self.myLayout)
+        self.installEventFilter(self)
+
+    # Function reimplementing event() function
+    def event(self, event):
+        if event.type()== QEvent.KeyRelease and event.key()== Qt.Key_Tab:
+            self.myLineEdit3.setFocus()  # always focus this button on tab...
+            return True
+        return QWidget.event(self,event)
+
+    def eventFilter(self, receiver, event):
+        if(event.type() == QEvent.MouseButtonPress):
+            QMessageBox.information(None,"Filtered Mouse Press Event!!",'Mouse Press Detected')
+            return True
+        return super(MyWidget,self).eventFilter(receiver, event)
+
+class MyApplication(QApplication):
+    def __init__(self, args):
+        super(MyApplication, self).__init__(args)
+
+    def notify(self, receiver, event):
+        if (event.type() == QEvent.KeyPress):
+            QMessageBox.information(None, "Received Key Release EVent", "You Pressed: "+ event.text())
+        return super(MyApplication, self).notify(receiver, event)
+
+
+
+class MyCalculator(QWidget):
+    def __init__(self):
+        QWidget.__init__(self)
+        self.amtLabel = QLabel('Loan Amount')
+        self.roiLabel = QLabel('Rate of Interest')
+        self.yrsLabel = QLabel('No. of Years')
+        self.emiLabel = QLabel('EMI per month')
+        self.emiValue = QLCDNumber()
+        self.emiValue.setSegmentStyle(QLCDNumber.Flat)
+        self.emiValue.setFixedSize(QSize(130,30))
+        self.emiValue.setDigitCount(8)
+        self.amtText = QLineEdit('10000')
+        self.roiSpin = QSpinBox()
+        self.roiSpin.setMinimum(1)
+        self.roiSpin.setMaximum(15)
+        self.yrsSpin = QSpinBox()
+        self.yrsSpin.setMinimum(1)
+        self.yrsSpin.setMaximum(20)
+        self.roiDial = QDial()
+        self.roiDial.setNotchesVisible(True)
+        self.roiDial.setMaximum(15)
+        self.roiDial.setMinimum(1)
+        self.roiDial.setValue(1)
+        self.yrsSlide = QSlider(Qt.Horizontal)
+        self.yrsSlide.setMaximum(20)
+        self.yrsSlide.setMinimum(1)
+        self.calculateButton = QPushButton('Calculate EMI')
+        self.myGridLayout = QGridLayout()
+        self.myGridLayout.addWidget(self.amtLabel, 0, 0)
+        self.myGridLayout.addWidget(self.roiLabel, 1, 0)
+        self.myGridLayout.addWidget(self.yrsLabel, 2, 0)
+        self.myGridLayout.addWidget(self.amtText, 0, 1)
+        self.myGridLayout.addWidget(self.roiSpin, 1, 1)
+        self.myGridLayout.addWidget(self.yrsSpin, 2, 1)
+        self.myGridLayout.addWidget(self.roiDial, 1, 2)
+        self.myGridLayout.addWidget(self.yrsSlide, 2, 2)
+        self.myGridLayout.addWidget(self.calculateButton, 3, 1)
+        self.setLayout(self.myGridLayout)
+
+        # inserting/binding connectors to the widget
+
+        self.setWindowTitle("A simple EMI calculator")
+        self.roiDial.valueChanged.connect(self.roiSpin.setValue)
+        self.connect(self.roiSpin, SIGNAL("valueChanged(int)"), self.roiDial.setValue)
+
+        self.yrsSlide.valueChanged.connect(self.yrsSpin.setValue)
+        self.connect(self.yrsSpin, SIGNAL("valueChanged(int)"), self.yrsSlide, SLOT("setValue(int)"))
+
+        self.connect(self.calculateButton, SIGNAL("clicked()"), self.showEMI)
+
+        #
+    def showEMI(self):
+        loanAmount = float(self.amtText.text())
+        rateInterest = float( float (self.roiSpin.value() / 12) / 100)
+        noMonths = int(self.yrsSpin.value() * 12)
+        emi = (loanAmount * rateInterest) * ( ( ( (1 + rateInterest) ** noMonths ) / ( ( (1 + rateInterest) ** noMonths ) - 1) ))
+        self.emiValue.display(emi)
+        self.myGridLayout.addWidget(self.emiLabel, 4, 0)
+        self.myGridLayout.addWidget(self.emiValue, 4, 2)
+
+
+
+
+
+
 
 if __name__ == '__main__':
     # Create the main application
@@ -283,12 +429,14 @@ if __name__ == '__main__':
         myApp.exec_()
         sys.exit(0)
         """
-        mainWindow = MainWindow()
-        mainWindow.SetFLayout()
+        #mainWindow = MainWindow()
+        #mainWindow.SetFLayout()
         #mainWindow.CreateStatusBar()
         #mainWindow.SetupComponents()
-        mainWindow.show()
+        #mainWindow.show()
         #mainWindow.ShowProgress()
+        myWidget = MyCalculator()
+        myWidget.showEMI()
         myApp.exec_()
         sys.exit(0)
 
